@@ -1,6 +1,6 @@
 from contract import contract
 from mutableInt import mutableInt
-#hello github!
+
 class account:
     def __init__(self, _master, _initData):
         self.mpid = int(_initData['mpid'])
@@ -27,10 +27,6 @@ class account:
     
     def logChg(self):
         self._master.changedAccts.add(self.mpid)
-
-    def _resolveContract(self, contractID, value):
-        if contractID in self.contracts:
-            self.contracts[contractID].resolve(value)
 
     def placeOrder(self, _contractID, _price, _side, _qty):
         try:

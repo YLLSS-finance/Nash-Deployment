@@ -9,5 +9,6 @@ class NMEX_cli:
             'rmvorder':nmex.removeOrder
         }
     
-    # syntax:
-    def parseCommand()
+    # syntax: mpid command
+    def parseCommand(self, command):
+        

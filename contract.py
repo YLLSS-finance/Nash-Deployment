@@ -36,6 +36,7 @@ class contract:
         self.batchRemoveOrders(self.contractOrders)
         self._master.balance += self.position[0] * resolutionValue
         self._master.balance += self.position[1] * (100 - resolutionValue)
+        del self._master.contracts[self.contractID]
 
     def getOrderID(self):
         for i in range(0, self._master.order_limit):

@@ -115,7 +115,11 @@ class NMEX:
             'debug':'Account has been created successfully'
         }
 
-    def createContract(self, acct, contractName):
+    def createContract(self, sudoMPID, contractName):
+        adminCheck = self.checkAdmin(sudoMPID)
+        if not adminCheck is None:
+            return adminCheck
+            
         contractID = self.getAvblContractID()
         if contractID is False:
             return {
@@ -142,8 +146,16 @@ class NMEX:
             'debug':'contract creation successful'
         }
 
-    def resolveContract(self, contrr):
-        if 
+    def resolveContract(self, sudoMPID, contractName, price):
+        adminCheck = self.checkAdmin(sudoMPID)
+        if not adminCheck is None:
+            return adminCheck
+            
+        contractID = self.contractNameIDs[str(contractName)]
+        for acct in self.accounts.items():
+            if contractID in acct.contracts:
+                acct.contracts[contractID].resolve(price)
+    
     
     def addOrder(self, mpid, contractID, price, side, qty):
         callback = self.checkAccount(mpid)
@@ -152,7 +164,15 @@ class NMEX:
 
         return self.accounts[int(mpid)].placeOrder(contractID, price, side, qty)
     
-    def addOrderByContractName(self, mpid, contractName)
+    def addOrderByContractName(self, mpid, contractName, price, side, qty):
+        if not contractName in self.contractNameIDs:
+            return {
+                'callback':'000',
+                'debug':'The provided contract name does not exist'
+            }
+        contractID = self.contractNameIDs[contractName]
+        return self.addOrder(mpid, contractID, price, side, qty)
+        
 
     def removeOrder(self, mpid, orderID):
         callback = self.checkAccount(mpid)
