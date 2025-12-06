@@ -2,13 +2,39 @@
 from sortedcontainers import SortedSet
 
 class orderBook:
-    def __init__(self):
-        self.priceLevels = [SortedSet(), SortedSet()]
-        # price level: [head, tail]
+    def __init__(self, _master):
+        self._master = _master
+        
+        self.priceLevels = [SortedSet(key=lambda x:-x), SortedSet()]
+        # price level: [head, tail, number of orders]
         self.ordersAtLevel = [{}, {}]
         self.bestPrices = [None, None]
         
-        self.orders = {}
+        # CONTAINS ORDER OBJECTS
+        self.orders = {None:[None, None]}
+        
+        self._CACHE = None #Not implemented
+    
+    def matchIncomingOrder(self, order):
+        opposingLevel = self.ordersAtLevel[1 - order.side]
+        while True:
+            bestPrice = self.bestPrices[1 - order.side]
+            if not order.qty: break
+            if not bestPrice: break
+            if order.side == 0:
+                if bestPrice > order.price: break
+            else:
+                if bestPrice < order.price: break
+            # first order in line at the best price at the matching side
+            bestOrder = opposingLevel[bestPrice][0]
+            fillPrice = bestOrder.price
+            fillQty = min(order.qty, bestOrder.qty)
+            bestOrder.fill(fillPrice, fillQty)
+            order.fill(fillPrice, fillQty)
+            if not bestOrder.qty:
+                self.removeOrder(bestOrder)
+        if order.qty:
+            self.addOrderToLevel(order)
     
     def addOrderToLevel(self, order):
         priceLevel = self.priceLevels[order.side]
@@ -52,3 +78,6 @@ class orderBook:
         del self.orders[order]
         if listEnds[2] == 0:
             del self.ordersAtLevel[order.side][order.price]
+            priceLevel = self.priceLevels[order.side]
+            priceLevel.remove(order.price)
+            self.bestPrices[order.side] = priceLevel[0] if len(priceLevel) else None
