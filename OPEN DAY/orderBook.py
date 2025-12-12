@@ -44,6 +44,6 @@ class orderBook:
 
         order_head = order[7][0]
         order_tail = order[7][1]
-        order_head[7][1] = orderTail
-        orderTail[7][0] = orderHead
+        if not order_head is None: order_head[7][1] = order_head
+        if not order_tail is None: order_tail[7][0] = order_tail
 
