@@ -25,14 +25,14 @@ class exchange:
         pass
 
     # TODO: Logging
-    def _fillOrder(self, userBalances, order, price, qty):
+    def fillOrder(self, order, price, qty):
         fillRed = min(qty, order[6][0])
         fillInc = qty - fillRed
 
         priceImprovement = abs(price - order.price)
         orderCost = op.orderCost(order)
 
-        userBalances = self.userBalances[mpid]
+        userBalances = self.userBalances[order[2]]
         saleRevenue = fillRed * (orderCost + priceImprovement)
         increaseCost = fillInc * (orderCost - priceImprovement)
 
@@ -42,14 +42,11 @@ class exchange:
         if sum(order[6]) == 0:
             self.removeOrder(order, skip_balance=True)
 
-    def fillOrder(self, mpid, orderID, price, qty):
-        self._fillOrder(userBalances=self.userBalances[mpid], order=self.userOrders[mpid][orderID], price=price, qty=qty)
-
-    # TODO: Logging
     def removeOrder(self, order, skip_balance=False):
         mpid = order[2]
         del self.userOrders[mpid][order[0]]
-        self.userPositions[mpid][1][1 - order[5]] += order[6][0]
+
+        self.userPositions[mpid][order[3]][1][1 - order[5]] += order[6][0]
         self.marginManagers[mpid][order[3]].allocReducible()
         if not skip_balance:
             self.userBalances[mpid][1] += op.orderCost(order) * order[6][1]
