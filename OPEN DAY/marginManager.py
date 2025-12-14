@@ -33,8 +33,9 @@ class marginManager:
         # ------------------------------------------------------------------------------------------
 
         # ------------------------------------------------------------------------------------------
-        # Reconstruct reducible, sortedList of all orders by side, and list of the number of all orders containing a reducible component by side
-        # This has to be done as we are going to establish the reducible position manually for integrity
+        # Reconstruct reducible, sortedList of all orders by side, and list of the number of all orders containing a reducible
+        # component by side This has to be done as we are going to establish the reducible position manually for
+        # integrity
         self.reducible[:] = self.position
         self.orderList = [SortedList(key=op.buyOrderComparator), SortedList(key=op.sellOrderComparator)]
         self.reduceOrders = [0, 0]
@@ -75,12 +76,15 @@ class marginManager:
         inc = qty - red
         order = [orderID, t.time(), self.mpid, self.contractID, price, side, [red, inc], [None, None]]
 
-        # A conflict (order with increase component, the new order, having more priority than an order with an reduce component) can only occur
-        # if the new order has an increase component and there are currently reduce orders in the order queue
+        # A conflict (order with increase component, the new order, having more priority than an order with a reduce
+        # component) can only occur if the new order has an increase component and there are currently reduce orders
+        # in the order queue
         if self.reduceOrders[side] and inc:
-            # Generator object to iterate over all reduce orders on the side of the new order in ascending order of execution priority
+            # Generator object to iterate over all reduce orders on the side of the new order in ascending order of
+            # execution priority
             scan_range = range(self.reduceOrders[side], -1, -1)
             scanned_orders = self.orderList[side]
             priority = self.priorityComparatorMap[side]
             for order_index in scan_range:
                 reduce_order = scanned_orders[order_index]
+            f
